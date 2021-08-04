@@ -2,16 +2,19 @@ const functions = require("firebase-functions");
 
 const admin = require('firebase-admin');
 admin.initializeApp();
+const db = admin.firestore();
 
-exports.onCreateUser = functions.firestore.document('/users/{docId}').onCreate(async (snap, cxt) => {
-    const docId = cxt.params.docId;
 
-    const originalName = snap.data().name;
-    const lowercaseName = originalName.toUpperCase();
-    functions.logger.log('Set lowercase_name to ', docId, lowercaseName);
+exports.onCreatePayment = functions.firestore.document('/users/{userId}/payment/{paymentId}').onCreate(async (snap, cxt) => {
+    const userId = cxt.params.userId;
+    const paymentId = cxt.params.paymentId;
+    const ticketId = (await snap.get()).ticketId;
 
-    await snap.ref.set({ lowercase_name: lowercaseName, created_at: firebase.getDate() }, { merge: true });
+    // Get payment ticket price
+    const price = (await db.collection("ticket").doc(ticketId).get()).price;
 
-    const eventDocId = snap.ref.parents.collection("logs").add({ event: "createUser", created_at: firebase.getDate(), created_by: docId });
-    functions.logger.log('Add event log ', eventDocId);
+    functions.logger.log(`User make a payment user id:${userId} payment id:${paymentId} ticket id:${ticketId} ticket price:${price}`);
+
+    await snap.ref.set({ created_at: firebase.getDate(), price }, { merge: true });
 });
+

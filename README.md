@@ -114,3 +114,9 @@ i  Writing project information to .firebaserc...
 ```
 firebase emulators:start
 ```
+
+# install dependency
+```
+npm install --save-dev firebase-functions-test
+npm install --save-dev jest
+```
