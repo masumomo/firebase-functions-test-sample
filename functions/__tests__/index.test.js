@@ -1,11 +1,13 @@
 const myFunctions = require('../index');
 
 const test = require('firebase-functions-test')({
-    databaseURL: 'https://my-project.firebaseio.com',
-    storageBucket: 'my-project.appspot.com',
+    // databaseURL: 'https://my-project.firebaseio.com',
+    // storageBucket: 'my-project.appspot.com',
     projectId: 'my-project',
 }, 'path/to/serviceAccountKey.json');
 
+// TODO If you use firebase test sdk, don't need it
+process.env.FIRESTORE_EMULATOR_HOST = "localhost:8080";
 
 test('Payment information should be added to payment doc when user purchase a ticket, ', () => {
     const wrapped = test.wrap(myFunctions.onCreatePayment);
