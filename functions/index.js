@@ -4,6 +4,10 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 const db = admin.firestore();
 
+// if (location.hostname === "localhost") {
+// db.useEmulator("localhost", 8080);
+// }
+
 exports.onCreateUser = functions.firestore.document('/user/{userId}').onCreate(async (snap, cxt) => {
     const userId = cxt.params.userId;
     const { name } = snap.data();
@@ -20,10 +24,10 @@ exports.onCreateUser = functions.firestore.document('/user/{userId}').onCreate(a
 exports.onCreatePayment = functions.firestore.document('/user/{userId}/payment/{paymentId}').onCreate(async (snap, cxt) => {
     const userId = cxt.params.userId;
     const paymentId = cxt.params.paymentId;
-    const ticketId = (await snap.get()).ticketId;
+    const ticketId = snap.data().ticket_id;
 
     // Get payment ticket price
-    const price = (await db.collection("ticket").doc(ticketId).get()).price;
+    const price = (await db.collection("ticket").doc(ticketId).get()).data().price;
 
     functions.logger.log(`User make a payment user id:${userId} payment id:${paymentId} ticket id:${ticketId} ticket price:${price}`);
 
